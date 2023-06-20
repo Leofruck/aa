@@ -43,12 +43,13 @@ function deletarAutor(req, res) {
   const id = req.params.id;
 
   try {
-    cadastroAutores.remover(id);
+    cadastroAutores.deletar(id);
     res.sendStatus(204);
   } catch (err) {
     res.status(err.numero).json(err);
   }
 }
+
 
 function associarAutorAoLivro(req, res) {
   const idLivro = req.params.id;
