@@ -1,3 +1,6 @@
+const { listarLivros } = require("./controller/livroController");
+const Cliente = require("./cadastro_cliente");
+
 let listaLivros = [];
 let idAutoIncrement = 1;
 
@@ -32,7 +35,7 @@ function buscarPorId(id) {
 }
 
 function atualizar(id, livroAlterar) {
-    if(!livroAlterar || !livroAlterar.nome || !livroAlterar.preco){
+    if(!livroAlterar || !livroAlterar.isbn || !livroAlterar.nome || !livroAlterar.autor || !livroAlterar.editora || !livroAlterar.ano){
         throw ({
             numero: 400,
             msg: "Erro: Os parametros do livro estão invalidos"
@@ -65,9 +68,9 @@ function deletar(id) {
 
 }
 
-function retirarLivro(clienteId, livroId) {
-    const cliente = buscarPorId(clienteId);
+function retirarLivro(livroId, clienteId) {
     const livro = buscarPorId(livroId);
+    const cliente = Cliente.buscarPorId(clienteId);    
 
     if (!cliente) {
         throw ({
@@ -83,7 +86,7 @@ function retirarLivro(clienteId, livroId) {
         });
     }
 
-    if (!livro.disponivel) {
+    if (livro.retirado) {
         throw ({
             numero: 400,
             msg: "Erro: Livro indisponível para retirada."
@@ -97,30 +100,24 @@ function retirarLivro(clienteId, livroId) {
         });
     }
 
-    livro.disponivel = false; // Define o livro como indisponível para retirada
-    const dataEntrega = calcularDataEntrega();
-    const retirada = {
-        livroId: livro.id,
-        dataRetirada: new Date(),
-        dataEntrega: dataEntrega
-    };
-    cliente.livrosRetirados.push(retirada);
-
-    return {
-        cliente: cliente,
-        livro: livro,
-        dataEntrega: dataEntrega
-    };
+    if (!livro.retirado) {
+        livro.retirado = true
+        livro.idCliente = cliente.id
+        livro.dataRetirada = new Date()
+        livro.dataEntrega = calcularDataEntrega()
+        return livro
+    } 
+    
 }
 
 function calcularDataEntrega() {
     const dataAtual = new Date();
-    const prazoEntrega = 7; // Prazo de entrega em dias
+    const prazoEntrega = 7; 
     const dataEntrega = new Date(dataAtual.getTime() + prazoEntrega * 24 * 60 * 60 * 1000);
     return dataEntrega;
 }
 
-function devolverLivro(clienteId, livroId) {
+/*function devolverLivro(clienteId, livroId) {
     const cliente = buscarPorId(clienteId);
     const livro = buscarPorId(livroId);
 
@@ -162,6 +159,50 @@ function devolverLivro(clienteId, livroId) {
         atraso: diasAtraso
     };
 }
+*/
+
+function devolverLivro(clienteId, livroId) {
+    const cliente = cadastroCliente.buscarPorId(clienteId);
+    const livro = buscarPorId(livroId);
+  
+    if (!cliente) {
+      throw {
+        numero: 404,
+        msg: "Erro: Cliente não encontrado."
+      };
+    }
+  
+    if (!livro) {
+      throw {
+        numero: 404,
+        msg: "Erro: Livro não encontrado."
+      };
+    }
+  
+    const livroRetirado = cliente.livrosRetirados.find(retirada => retirada.livroId === livro.id);
+  
+    if (!livroRetirado) {
+      throw {
+        numero: 400,
+        msg: "Erro: O livro não foi retirado pelo cliente."
+      };
+    }
+  
+    const dataAtual = new Date();
+    const dataEntrega = new Date(livroRetirado.dataEntrega);
+    const atraso = Math.max(0, dataAtual - dataEntrega);
+    const diasAtraso = Math.ceil(atraso / (24 * 60 * 60 * 1000));
+  
+    livro.disponivel = true;
+  
+    cliente.livrosRetirados = cliente.livrosRetirados.filter(retirada => retirada.livroId !== livro.id);
+  
+    return {
+      cliente: cliente,
+      livro: livro,
+      atraso: diasAtraso
+    };
+  }
 
 
 function buscarLivrosDisponiveis() {
@@ -169,12 +210,23 @@ function buscarLivrosDisponiveis() {
 }
 
 function buscarLivrosPorAutor(autor) {
-    return listaLivros.filter(livro => livro.autor.toLowerCase() === autor.toLowerCase());
+   const livroAutor = listaLivros.filter((livro) => livro.autor.includes(autor));
+  
+   return livroAutor
 }
 
 function buscarLivrosPorNome(nome) {
-    return listaLivros.filter(livro => livro.nome.toLowerCase().includes(nome.toLowerCase()));
+    const livroNome = listaLivros.filter((livro) => livro.nome.includes(nome));
+  
+   return livroNome
 }
+
+function buscarLivrosDisponiveis() {
+    const livroDisponivel = listaLivros.filter((livro) => !livro.retirado);
+  
+   return livroDisponivel
+}
+
 
 module.exports = {
     listar,
