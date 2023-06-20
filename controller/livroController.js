@@ -43,23 +43,48 @@ function deletarLivro(req, res) {
   const id = req.params.id;
 
   try {
-    cadastroLivros.remover(id);
+    cadastroLivros.deletar(id);
     res.sendStatus(204);
   } catch (err) {
     res.status(err.numero).json(err);
   }
 }
 
-function buscarAutorDoLivro(req, res) {
-  const id = req.params.id;
-
-  try {
-    const autor = cadastroLivros.buscarAutorDoLivro(id);
-    res.json(autor);
-  } catch (err) {
-    res.status(err.numero).json(err);
-  }
+function buscarLivrosPorAutor(req, res) {
+  const autor = req.params.autor;
+  const livrosEncontrados = cadastroLivros.buscarLivrosPorAutor(autor);
+  res.json(livrosEncontrados);
 }
+
+function buscarLivrosPorNome(req, res) {
+  const nome = req.params.nome;
+  const livrosEncontrados = cadastroLivros.buscarLivrosPorNome(nome);
+  res.json(livrosEncontrados);
+}
+
+function buscarLivrosDisponiveis(req, res) {  
+  const livrosEncontrados = cadastroLivros.buscarLivrosDisponiveis();
+  res.json(livrosEncontrados);
+}
+
+
+function retirarLivro(req, res) {
+ const id = req.params.id;
+ const clienteId = req.params.id;
+ const livroRetirada = cadastroLivros.retirarLivro(id,clienteId)
+ res.json(livroRetirada)
+
+}
+
+function devolverLivro(req, res) {   // refazeeeerrrr
+  const id = req.params.id;
+  const clienteId = req.params.id;
+  const livroRetirada = cadastroLivros.devolverLivro(id,clienteId)
+  res.json(livroRetirada)
+ 
+ }
+
+
 
 module.exports = {
   listarLivros,
@@ -67,5 +92,9 @@ module.exports = {
   inserirLivro,
   atualizarLivro,
   deletarLivro,
-  buscarAutorDoLivro
+  devolverLivro,
+  buscarLivrosPorAutor,
+  buscarLivrosPorNome,
+  buscarLivrosDisponiveis,
+  retirarLivro
 };
