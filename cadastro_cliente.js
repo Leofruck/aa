@@ -9,6 +9,7 @@ function listar() {
 function inserir(cliente) {
     if(cliente && cliente.matricula && cliente.nome && cliente.telefone){
         cliente.id = idAutoIncrement++;
+        cliente.livrosRetirados = 0
         listaClientes.push(cliente);
         return cliente;
     } else {
@@ -32,7 +33,7 @@ function buscarPorId(id) {
 }
 
 function atualizar(id, clienteAlterar) {
-    if(!clienteAlterar || !clienteAlterar.nome || !clienteAlterar.preco){
+    if(!clienteAlterar || !clienteAlterar.matricula || !clienteAlterar.nome || !clienteAlterar.telefone){
         throw ({
             numero: 400,
             msg: "Erro: Os parametros dos clientes estao invalidos"
