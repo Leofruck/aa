@@ -9,7 +9,7 @@ function buscarClientePorId(req, res) {
   const id = req.params.id;
 
   try {
-    const cliente = cadastroCliente.buscarClientePorId(id);
+    const cliente = cadastroCliente.buscarPorId(id);
     res.json(cliente);
   } catch (err) {
     res.status(err.numero).json(err);
