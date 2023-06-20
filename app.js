@@ -10,7 +10,7 @@ const PORTA = 3001;
 app.use(express.json());
 
 app.use('/login', loginRouter);
-app.use('/livros', livroRouter);
+app.use('/livro', livroRouter);
 app.use('/autores', autorRouter);
 app.use('/cliente', clienteRouter);
 
