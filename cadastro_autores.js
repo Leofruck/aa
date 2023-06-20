@@ -1,15 +1,15 @@
 
-let listaLivros = [];
+let listaAutores = [];
 let idAutoIncrement = 1;
 
 function listar() {
-    return listaLivros;
+    return listaAutores;
 }
 
 function inserir(autor) {
     if(autor && autor.nome && autor.paisOrigem){
         autor.id = idAutoIncrement++;
-        listaLivros.push(autor);
+        listaAutores.push(autor);
         return autor;
     }
     else {
@@ -21,7 +21,7 @@ function inserir(autor) {
 }
 
 function buscarPorId(id) {
-    for(let autor of listaLivros){ 
+    for(let autor of listaAutores){ 
         if(autor.id == id){
             return autor;
         }
@@ -32,18 +32,18 @@ function buscarPorId(id) {
     });
 }
 
-function atualizar(id, livroAlterar) {
-    if(!livroAlterar || !livroAlterar.nome || !livroAlterar.preco){
+function atualizar(id, autoresAlterar) {
+    if(!autoresAlterar || !autoresAlterar.nome || !autoresAlterar.paisOrigem){
         throw ({
             numero: 400,
             msg: "Erro: Os parametros do Autor estao invalidos"
         });       
     }
-    for(let indice in listaLivros){
-        if(listaLivros[indice].id == id) {
-            livroAlterar.id = parseInt(id);
-            listaLivros[indice] = livroAlterar;
-            return listaLivros[indice];
+    for(let indice in listaAutores){
+        if(listaAutores[indice].id == id) {
+            autoresAlterar.id = parseInt(id);
+            listaAutores[indice] = autoresAlterar;
+            return listaAutores[indice];
         }
     }    
     throw ({
@@ -53,10 +53,10 @@ function atualizar(id, livroAlterar) {
 }
 
 function deletar(id) {
-    for(let indice in listaLivros){
-        if(listaLivros[indice].id == id) {
-            const livroDeletado = listaLivros.splice(indice,1);
-            return livroDeletado[0];
+    for(let indice in listaAutores){
+        if(listaAutores[indice].id == id) {
+            const autoresDeletado = listaAutores.splice(indice,1);
+            return autoresDeletado[0];
         }
     }
     throw ({
@@ -65,6 +65,8 @@ function deletar(id) {
     });
 
 }
+
+
 
 module.exports = { 
     listar,
